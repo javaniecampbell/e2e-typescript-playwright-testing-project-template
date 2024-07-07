@@ -1,5 +1,5 @@
 import { Page } from 'playwright';
-
+import { config } from '../../config/index';
 export class LoginPage {
     private page: Page;
 
@@ -8,7 +8,7 @@ export class LoginPage {
     }
 
     async navigate() {
-        await this.page.goto('http://your-app-url.com/login');
+        await this.page.goto(`${config.baseUrl}/login`);
     }
 
     async enterCredentials(username: string, password: string) {
