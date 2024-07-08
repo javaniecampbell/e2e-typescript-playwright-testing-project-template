@@ -10,6 +10,7 @@
     "test:e2e:parallel": "cucumber-js --parallel 2",
     "test:e2e:retry": "cucumber-js --retry 2",
     "report:generate": "allure generate ./allure-results --clean -o ./allure-report",
+    "report:dashboard": "npx allure serve allure-results",
     "report:open": "allure open ./allure-report",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -34,14 +35,15 @@
     "@playwright/test": "^1.45.1",
     "@types/cucumber": "^7.0.0",
     "@types/node": "^20.14.10",
-    "playwright": "^1.45.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.3",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
-    "allure-commandline": "^2.29.0",
-    "allure-cucumberjs": "^3.0.0-beta.6",
+    "allure-commandline": "^2.13.8",
+    "allure-cucumberjs": "^2.0.0-beta.26",
+    "allure-js-commons": "^2.0.0-beta.26",
     "eslint": "^9.6.0",
-    "npm-check-updates": "^16.14.20"
+    "npm-check-updates": "^16.14.20",
+    "playwright": "^1.45.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
   }
 }
