@@ -4,14 +4,16 @@ import config from '../../playwright.config';
 
 setDefaultTimeout(config.timeout!);
 
-let browser: Browser;
+declare global {
+    var browser: Browser;
+}
 
 // Launch the browser before all tests
 BeforeAll(async function () {
-    browser = await chromium.launch(config.use!);
+    global.browser = await chromium.launch(config.use!);
 });
 
 // Close the browser after all tests
 AfterAll(async function () {
-    await browser.close();
+    await global.browser.close();
 });
