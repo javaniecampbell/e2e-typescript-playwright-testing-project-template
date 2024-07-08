@@ -1,0 +1,94 @@
+# azure-pipelines.yml
+
+trigger:
+  - main # Trigger the pipeline on changes to the main branch
+
+pr:
+  - main # Also trigger on pull requests to main
+
+pool:
+  vmImage: "ubuntu-latest" # Use the latest Ubuntu VM image
+
+variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+
+stages:
+  - stage: Test
+    jobs:
+      - job: E2ETests
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "18.x" # Use Node.js 14.x
+            displayName: "Install Node.js"
+
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(npm_config_cache)
+            displayName: Cache npm packages
+
+          - script: |
+              npm ci
+            displayName: "Install dependencies"
+
+          - script: |
+              npx playwright install --with-deps
+            displayName: "Install Playwright browsers"
+
+          - script: |
+              npm run test:e2e
+            displayName: "Run E2E tests"
+            env:
+              BASE_URL: $(baseUrl) # Use a pipeline variable for the base URL
+              TEST_USERNAME: $(testUsername)
+              TEST_PASSWORD: $(testPassword)
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "**/junit-*.xml"
+              testRunTitle: "E2E Tests"
+            displayName: "Publish Test Results"
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: "cobertura"
+              summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/*coverage.xml"
+            displayName: "Publish Code Coverage Results"
+          # Ensure the Cucumber Report is published as an artifact
+          # Install following : https://marketplace.visualstudio.com/items?itemName=MaciejMaciejewski.azure-pipelines-cucumber
+          - task: PublishCucumberReport@1
+            inputs:
+              jsonDir: "$(System.DefaultWorkingDirectory)/cucumber-report"
+              outputPath: "$(Build.SourcesDirectory)/cucumber-report"
+              name: "E2E Test Report"
+            displayName: "Publish Cucumber Report"
+
+          - publish: $(System.DefaultWorkingDirectory)/cucumber-report
+            artifact: CucumberReport
+            displayName: "Publish Cucumber Report as Artifact"
+
+  - stage: Deploy
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    jobs:
+      - deployment: DeployToStaging
+        displayName: Deploy to Staging
+        environment: "staging"
+        pool:
+          vmImage: "ubuntu-latest"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: "current"
+                    downloadType: "single"
+                    artifactName: "drop"
+                    downloadPath: "$(System.ArtifactsDirectory)"
+              # Add your deployment steps here
+              # This is where you would deploy your application to your staging environment
