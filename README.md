@@ -18,18 +18,20 @@ This project implements end-to-end (e2e) testing using Cucumber.js for behavior-
 
 ## Prerequisites
 
-- Node.js (version 14 or higher)
+- Node.js (version 18 or higher)
 - npm (usually comes with Node.js)
 
 ## Installation
 
 1. Clone the repository:
+
    ```
    git clone https://github.com/javaniecampbell/e2e-typescript-playwright-testing-project-template.git
    cd e2e-typescript-playwright-testing-project-template
    ```
 
 2. Install dependencies:
+
    ```
    npm install
    ```
@@ -85,6 +87,7 @@ TypeScript is configured in `tsconfig.json`. Ensure this file is set up correctl
 3. Use page objects from the `src/page-objects` directory in your step definitions for better organization.
 
 Example feature file (`src/features/login.feature`):
+
 ```gherkin
 Feature: User Login
 
@@ -96,12 +99,13 @@ Feature: User Login
 ```
 
 Example step definition (`src/step-definitions/login.steps.ts`):
-```typescript
-import { Given, When, Then } from '@cucumber/cucumber';
-import { LoginPage } from '../page-objects/login.page';
-import { CustomWorld } from '../support/custom-world';
 
-Given('I am on the login page', async function(this: CustomWorld) {
+```typescript
+import { Given, When, Then } from "@cucumber/cucumber";
+import { LoginPage } from "../page-objects/login.page";
+import { CustomWorld } from "../support/custom-world";
+
+Given("I am on the login page", async function (this: CustomWorld) {
   const loginPage = new LoginPage(this.page);
   await loginPage.navigate();
 });
@@ -112,11 +116,13 @@ Given('I am on the login page', async function(this: CustomWorld) {
 ## Running Tests
 
 To run all tests:
+
 ```
 npm run test:e2e
 ```
 
 To run specific tags:
+
 ```
 npm run test:e2e -- --tags @smoke
 ```
