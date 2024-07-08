@@ -11,8 +11,12 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '18.x'
-    - run: npm ci
-    - run: npm run test:e2e
+    - name: Cache node modules
+      run: npm ci
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+    - name: Run E2E tests
+      run: npm run test:e2e
     - name: Upload Cucumber report
       uses: actions/upload-artifact@v2
       with:
