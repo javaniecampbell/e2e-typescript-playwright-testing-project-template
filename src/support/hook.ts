@@ -1,6 +1,9 @@
 import { Before, After } from '@cucumber/cucumber';
-import { Browser, BrowserContext, Page } from 'playwright';
+import { Browser, 
+    // BrowserContext, Page 
+} from 'playwright';
 import { ICustomWorld } from './custom-world';
+import config from '../../playwright.config';
 
 // Declare the browser as a global variable
 declare global {
@@ -23,7 +26,7 @@ declare global {
 // });
 // Before each scenario, create a new context and page
 Before(async function (this: ICustomWorld) {
-    this.context = await global.browser.newContext();
+    this.context = await global.browser.newContext(config.use!);
     this.page = await this?.context?.newPage();
 });
 
